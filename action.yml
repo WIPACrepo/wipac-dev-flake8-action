@@ -1,23 +1,23 @@
 name: 'WIPAC Dev Flake8'
 description: 'GitHub Action Package for Running Flake8'
 
-# inputs:
-#   who-to-greet:  # id of input
-#     description: 'Who to greet'
-#     required: true
-#     default: 'World'
-
-# outputs:
-#   random-number:
-#     description: "Random number"
-#     value: ${{ steps.random-number-generator.outputs.random-id }}
+inputs:
+  max-function-length:
+    description: 'The max number of logical lines of code per function'
+    required: false
+    default: '200'
 
 runs:
   using: "composite"
   steps:
-    - run: pip install --upgrade pip
+    - run: |
+        pip install --upgrade pip
+        pip install flake8
+        pip install flake8-max-function-length
       shell: bash
-    - run: pip install flake8
-      shell: bash
-    - run: flake8 . --ignore=E203,E226,E228,E231,E501,W503,W504 --benchmark
+    - run: |
+        flake8 . \
+            --ignore=E203,E226,E228,E231,E501,W503,W504 \
+            --max-function-length "${{ inputs.max-function-length }}" \
+            --benchmark
       shell: bash
