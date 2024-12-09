@@ -24,5 +24,12 @@ runs:
             --ignore=E203,E226,E228,E231,E501,W503,W504 \
             --max-function-length "${{ inputs.max-function-length }}" \
             --max-complexity "${{ inputs.max-complexity }}" \
-            --benchmark
+            --benchmark \
+        | tee flake8_output.log
+      shell: bash
+    - run: |
+        COMPLEX_ISSUES=$(grep -o "is too complex ([0-9]\+)" flake8_output.log || true)
+        if [[ -n "$COMPLEX_ISSUES" ]]; then
+          echo "::notice:: Consider refactoring these functions or increasing the 'max-complexity' input if higher complexity is justifiable."
+        fi
       shell: bash
