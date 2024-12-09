@@ -23,19 +23,21 @@ runs:
     - run: |
         set -euo pipefail
         echo "Running Flake8..."
-        FLAKE8_FAILED=false # Ensure the variable is initialized
-        flake8 . \
+        FLAKE8_FAILED=false # Ensure variable is initialized
+        if ! flake8 . \
             --ignore=E203,E226,E228,E231,E501,W503,W504 \
             --max-function-length "${{ inputs.max-function-length }}" \
             --max-complexity "${{ inputs.max-complexity }}" \
             --benchmark \
-        | tee flake8_output.log || FLAKE8_FAILED=true
-        export FLAKE8_FAILED # Explicit export for subsequent steps
+            | tee flake8_output.log; then
+          FLAKE8_FAILED=true
+        fi
+        echo "FLAKE8_FAILED=$FLAKE8_FAILED" >> $GITHUB_ENV # Export variable to the environment
       shell: bash
     - run: |
         set -euo pipefail
         EXIT_WITH=0
-        
+
         if grep -q "is too complex" flake8_output.log; then
           echo "::error::Complexity issues detected. Refactor or adjust 'max-complexity'."
           EXIT_WITH=1
@@ -44,10 +46,11 @@ runs:
           echo "::error::Function length issues detected. Refactor or adjust 'max-function-length'."
           EXIT_WITH=1
         fi
-        if [ "$FLAKE8_FAILED" = "true" ]; then
+        # Check the exported FLAKE8_FAILED variable
+        if [ "${FLAKE8_FAILED:-false}" = "true" ]; then
           echo "::error::Flake8 found code style errors. Check the output above for details."
           EXIT_WITH=1
         fi
-        
+
         exit $EXIT_WITH
       shell: bash
