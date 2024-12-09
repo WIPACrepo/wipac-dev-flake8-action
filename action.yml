@@ -31,14 +31,18 @@ runs:
     - run: |
         if grep -q "is too complex" flake8_output.log; then
           echo "::error:: Complexity issues detected. Refactor or adjust 'max-complexity'."
-          exit 1
+          FAILED=1
         fi
         if grep -q "exceeds the maximum function length" flake8_output.log; then
           echo "::error:: Function length issues detected. Refactor or adjust 'max-function-length'."
-          exit 1
+          FAILED=1
         fi
         if grep -q "flake8: error" flake8_output.log; then
           echo "::error:: Flake8 failed due to an error. Check the output above for details."
+          FAILED=1
+        fi
+        
+        if [ -n "$FAILED" ]; then
           exit 1
         fi
       shell: bash
