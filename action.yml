@@ -23,13 +23,14 @@ runs:
     - run: |
         set -euo pipefail
         echo "Running Flake8..."
-        export FLAKE8_FAILED=false
+        FLAKE8_FAILED=false # Ensure the variable is initialized
         flake8 . \
             --ignore=E203,E226,E228,E231,E501,W503,W504 \
             --max-function-length "${{ inputs.max-function-length }}" \
             --max-complexity "${{ inputs.max-complexity }}" \
             --benchmark \
         | tee flake8_output.log || FLAKE8_FAILED=true
+        export FLAKE8_FAILED # Explicit export for subsequent steps
       shell: bash
     - run: |
         set -euo pipefail
