@@ -15,11 +15,13 @@ runs:
   using: "composite"
   steps:
     - run: |
+        set -euo pipefail
         pip install --upgrade pip
         pip install flake8
         pip install flake8-max-function-length
       shell: bash
     - run: |
+        set -euo pipefail
         echo "Running Flake8..."
         flake8 . \
             --ignore=E203,E226,E228,E231,E501,W503,W504 \
@@ -29,6 +31,7 @@ runs:
         | tee flake8_output.log || export FLAKE8_FAILED=true
       shell: bash
     - run: |
+        set -euo pipefail
         EXIT_WITH=0
         
         if grep -q "is too complex" flake8_output.log; then
