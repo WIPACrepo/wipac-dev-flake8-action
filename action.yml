@@ -29,6 +29,7 @@ runs:
         | tee flake8_output.log || true
       shell: bash
     - run: |
+        # parse results
         if grep -q "is too complex" flake8_output.log; then
           echo "::error::Complexity issues detected. Refactor or adjust 'max-complexity'."
           FAILED=1
