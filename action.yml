@@ -6,6 +6,10 @@ inputs:
     description: 'The max number of logical lines of code per function'
     required: false
     default: '200'
+  max-complexity:
+    description: 'The max allowed McCabe complexity value per function (1-5: simple; 6-10: complex but readable; 11-15: complex and hard to maintain; >16: error-prone)'
+    required: false
+    default: '10'
 
 runs:
   using: "composite"
@@ -19,5 +23,6 @@ runs:
         flake8 . \
             --ignore=E203,E226,E228,E231,E501,W503,W504 \
             --max-function-length "${{ inputs.max-function-length }}" \
+            --max-complexity "${{ inputs.max-complexity }}" \
             --benchmark
       shell: bash
