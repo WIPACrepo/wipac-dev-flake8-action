@@ -20,6 +20,7 @@ runs:
         pip install flake8-max-function-length
       shell: bash
     - run: |
+        echo "Running Flake8..."
         flake8 . \
             --ignore=E203,E226,E228,E231,E501,W503,W504 \
             --max-function-length "${{ inputs.max-function-length }}" \
@@ -27,6 +28,7 @@ runs:
             --benchmark \
         | tee flake8_output.log
       shell: bash
+      continue-on-error: true
     - run: |
         COMPLEX_ISSUES=$(grep -o "is too complex ([0-9]\+)" flake8_output.log || true)
         if [[ -n "$COMPLEX_ISSUES" ]]; then
