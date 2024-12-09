@@ -25,7 +25,8 @@ runs:
             --ignore=E203,E226,E228,E231,E501,W503,W504 \
             --max-function-length "${{ inputs.max-function-length }}" \
             --max-complexity "${{ inputs.max-complexity }}" \
-            --benchmark || export FLAKE8_FAILED=true
+            --benchmark \
+        | tee flake8_output.log || export FLAKE8_FAILED=true
       shell: bash
     - run: |
         EXIT_WITH=0
