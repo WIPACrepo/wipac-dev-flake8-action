@@ -6,18 +6,51 @@ inputs:
     description: 'The max number of logical lines of code per function'
     required: false
     default: '200'
+  max-complexity:
+    description: 'The max allowed McCabe complexity value per function (1-5: simple; 6-10: readable; 11-15: harder to read; >15: potentially hard to maintain)'
+    required: false
+    default: '15'
 
 runs:
   using: "composite"
   steps:
     - run: |
+        set -euo pipefail
         pip install --upgrade pip
         pip install flake8
         pip install flake8-max-function-length
       shell: bash
     - run: |
-        flake8 . \
+        set -euo pipefail
+        echo "Running Flake8..."
+        FLAKE8_FAILED=false # Ensure variable is initialized
+        if ! flake8 . \
             --ignore=E203,E226,E228,E231,E501,W503,W504 \
             --max-function-length "${{ inputs.max-function-length }}" \
-            --benchmark
+            --max-complexity "${{ inputs.max-complexity }}" \
+            --benchmark \
+            | tee flake8_output.log; then
+          FLAKE8_FAILED=true
+        fi
+        echo "FLAKE8_FAILED=$FLAKE8_FAILED" >> $GITHUB_ENV # Export variable to the environment
+      shell: bash
+    - run: |
+        set -euo pipefail
+        EXIT_WITH=0
+
+        if grep -q "is too complex" flake8_output.log; then
+          echo "::error::Complexity issues detected. Refactor or adjust 'max-complexity'."
+          EXIT_WITH=1
+        fi
+        if grep -q "Function too long" flake8_output.log; then
+          echo "::error::Function length issues detected. Refactor or adjust 'max-function-length'."
+          EXIT_WITH=1
+        fi
+        # Check the exported FLAKE8_FAILED variable
+        if [ "${FLAKE8_FAILED:-false}" = "true" ]; then
+          echo "::error::Flake8 found code style errors. Check the output above for details."
+          EXIT_WITH=1
+        fi
+
+        exit $EXIT_WITH
       shell: bash
