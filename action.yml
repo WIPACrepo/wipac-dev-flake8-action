@@ -19,6 +19,7 @@ runs:
         pip install flake8
         pip install flake8-max-function-length
       shell: bash
+
     - run: |
         echo "Running Flake8..."
         flake8 . \
@@ -28,13 +29,15 @@ runs:
             --benchmark \
         | tee flake8_output.log || true
       shell: bash
+
     - run: |
-        # parse results
+        FAILED=0
+        
         if grep -q "is too complex" flake8_output.log; then
           echo "::error::Complexity issues detected. Refactor or adjust 'max-complexity'."
           FAILED=1
         fi
-        if grep -q "exceeds the maximum function length" flake8_output.log; then
+        if grep -q "Function too long" flake8_output.log; then
           echo "::error::Function length issues detected. Refactor or adjust 'max-function-length'."
           FAILED=1
         fi
@@ -43,7 +46,7 @@ runs:
           FAILED=1
         fi
         
-        if [ -n "$FAILED" ]; then
+        if [ "$FAILED" -eq 1 ]; then
           exit 1
         fi
       shell: bash
