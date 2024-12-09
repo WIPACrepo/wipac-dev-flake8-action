@@ -7,9 +7,9 @@ inputs:
     required: false
     default: '200'
   max-complexity:
-    description: 'The max allowed McCabe complexity value per function (1-5: simple; 6-10: complex but readable; 11-15: complex and hard to maintain; >16: error-prone)'
+    description: 'The max allowed McCabe complexity value per function (1-5: simple; 6-10: readable; 11-15: harder to read; >15: potentially hard to maintain)'
     required: false
-    default: '10'
+    default: '15'
 
 runs:
   using: "composite"
