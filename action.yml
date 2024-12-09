@@ -26,12 +26,19 @@ runs:
             --max-function-length "${{ inputs.max-function-length }}" \
             --max-complexity "${{ inputs.max-complexity }}" \
             --benchmark \
-        | tee flake8_output.log
+        | tee flake8_output.log || true
       shell: bash
-      continue-on-error: true
     - run: |
-        COMPLEX_ISSUES=$(grep -o "is too complex ([0-9]\+)" flake8_output.log || true)
-        if [[ -n "$COMPLEX_ISSUES" ]]; then
-          echo "::notice:: Consider refactoring these functions or increasing the 'max-complexity' input if higher complexity is justifiable."
+        if grep -q "is too complex" flake8_output.log; then
+          echo "::error:: Complexity issues detected. Refactor or adjust 'max-complexity'."
+          exit 1
+        fi
+        if grep -q "exceeds the maximum function length" flake8_output.log; then
+          echo "::error:: Function length issues detected. Refactor or adjust 'max-function-length'."
+          exit 1
+        fi
+        if grep -q "flake8: error" flake8_output.log; then
+          echo "::error:: Flake8 failed due to an error. Check the output above for details."
+          exit 1
         fi
       shell: bash
