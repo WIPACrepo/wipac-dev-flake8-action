@@ -42,7 +42,7 @@ runs:
           FAILED=1
         fi
         if grep -qE "^[^:]+:[0-9]+:[0-9]+:" flake8_output.log; then
-          echo "::error::Flake8 failed due to an error. Check the output above for details."
+          echo "::error::Flake8 found code style errors. Check the output above for details."
           FAILED=1
         fi
         
