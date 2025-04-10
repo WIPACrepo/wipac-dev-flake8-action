@@ -33,6 +33,7 @@ runs:
         FLAKE8_ARGS+=("--max-function-length=${{ inputs.max-function-length }}")
         FLAKE8_ARGS+=("--max-complexity=${{ inputs.max-complexity }}")
         FLAKE8_ARGS+=("--benchmark")
+        FLAKE8_ARGS+=("--verbose")
         
         # Check for a usable Flake8 config file
         if ( [ -f .flake8 ] && grep -q '^\s*\[flake8\]' .flake8 ) || \
