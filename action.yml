@@ -35,13 +35,16 @@ runs:
         FLAKE8_ARGS+=("--benchmark")
         FLAKE8_ARGS+=("--verbose")
         
-        # Check for a usable Flake8 config file
-        if ( [ -f .flake8 ] && grep -q '^\s*\[flake8\]' .flake8 ) || \
-           ( [ -f setup.cfg ] && grep -q '^\s*\[flake8\]' setup.cfg ) || \
-           ( [ -f tox.ini ] && grep -q '^\s*\[flake8\]' tox.ini ); then
-          echo "Flake8 config detected. Using config file..."
+        # Force config file if found
+        if [ -f .flake8 ]; then
+          echo "Using .flake8 config file"
+          FLAKE8_ARGS+=("--config=.flake8")
+        elif [ -f setup.cfg ] && grep -q '^\s*\[flake8\]' setup.cfg; then
+          FLAKE8_ARGS+=("--config=setup.cfg")
+        elif [ -f tox.ini ] && grep -q '^\s*\[flake8\]' tox.ini; then
+          FLAKE8_ARGS+=("--config=tox.ini")
         else
-          echo "No Flake8 config found. Appending default --ignore list..."
+          echo "No Flake8 config found. Appending default ignore list"
           FLAKE8_ARGS+=("--ignore=E203,E226,E228,E231,E501,W503,W504")
         fi
         
