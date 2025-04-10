@@ -16,26 +16,46 @@ runs:
   steps:
     - run: |
         set -euo pipefail
+        echo "now: $(date -u +"%Y-%m-%dT%H:%M:%S.%3N")"
         pip install --upgrade pip
         pip install flake8
         pip install flake8-max-function-length
       shell: bash
     - run: |
         set -euo pipefail
+        echo "now: $(date -u +"%Y-%m-%dT%H:%M:%S.%3N")"
         echo "Running Flake8..."
-        FLAKE8_FAILED=false # Ensure variable is initialized
-        if ! flake8 . \
-            --ignore=E203,E226,E228,E231,E501,W503,W504 \
-            --max-function-length "${{ inputs.max-function-length }}" \
-            --max-complexity "${{ inputs.max-complexity }}" \
-            --benchmark \
-            | tee flake8_output.log; then
+        
+        FLAKE8_FAILED=false
+        
+        # Start building Flake8 args
+        FLAKE8_ARGS=(".")
+        FLAKE8_ARGS+=("--max-function-length=${{ inputs.max-function-length }}")
+        FLAKE8_ARGS+=("--max-complexity=${{ inputs.max-complexity }}")
+        FLAKE8_ARGS+=("--benchmark")
+        
+        # Check for a usable Flake8 config file
+        if ( [ -f .flake8 ] && grep -q '^\s*\[flake8\]' .flake8 ) || \
+           ( [ -f setup.cfg ] && grep -q '^\s*\[flake8\]' setup.cfg ) || \
+           ( [ -f tox.ini ] && grep -q '^\s*\[flake8\]' tox.ini ); then
+          echo "Flake8 config detected. Using config file..."
+        else
+          echo "No Flake8 config found. Appending default --ignore list..."
+          FLAKE8_ARGS+=("--ignore=E203,E226,E228,E231,E501,W503,W504")
+        fi
+        
+        # run!
+        echo "flake8 ${FLAKE8_ARGS[*]}"
+        if ! flake8 "${FLAKE8_ARGS[@]}" | tee flake8_output.log; then
           FLAKE8_FAILED=true
         fi
-        echo "FLAKE8_FAILED=$FLAKE8_FAILED" >> $GITHUB_ENV # Export variable to the environment
+        
+        # put in env var to interpret downstream
+        echo "FLAKE8_FAILED=$FLAKE8_FAILED" >> "$GITHUB_ENV"
       shell: bash
     - run: |
         set -euo pipefail
+        echo "now: $(date -u +"%Y-%m-%dT%H:%M:%S.%3N")"
         EXIT_WITH=0
 
         if grep -q "is too complex" flake8_output.log; then
