@@ -1,9 +1,8 @@
 # wipac-dev-flake8-action
 
-The WIPAC Dev Team's GitHub Action Package for Running Flake8
+## _Deprecated as of March 2026_
 
-## Overview
+This action package has been deprecated. Please use the reusable workflow `WIPACrepo/wipac-dev-workflows/.github/workflows/lint-python.yml@...` instead.
 
-This is a simple GitHub Action package that runs flake8 with several standardized options (commandline arguments). See `action.yml` for more detail.
-
-Additional options can be given in the usual flake8 config file [locations](https://flake8.pycqa.org/en/latest/user/configuration.html).
+For more information, see:
+https://github.com/WIPACrepo/wipac-dev-workflows/tree/main/.github/workflows/lint-python.md
