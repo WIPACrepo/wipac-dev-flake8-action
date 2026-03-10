@@ -1,6 +1,16 @@
 name: 'Deprecated: WIPAC Dev Flake8'
 description: 'Deprecated GitHub Action for running Flake8'
 
+inputs:
+  max-function-length:
+    description: 'The max number of logical lines of code per function'
+    required: false
+    default: '200'
+  max-complexity:
+    description: 'The max allowed McCabe complexity value per function (1-5: simple; 6-10: readable; 11-15: harder to read; >15: potentially hard to maintain)'
+    required: false
+    default: '15'
+
 runs:
   using: "composite"
   steps:
