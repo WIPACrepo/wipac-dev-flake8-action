@@ -1,5 +1,5 @@
-name: 'WIPAC Dev Flake8'
-description: 'GitHub Action Package for Running Flake8'
+name: 'Deprecated: WIPAC Dev Flake8'
+description: 'Deprecated GitHub Action for running Flake8'
 
 inputs:
   max-function-length:
@@ -14,67 +14,14 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - run: |
+    - name: Deprecated
+      run: |
+        # step: Deprecated
         set -euo pipefail
-        echo "now: $(date -u +"%Y-%m-%dT%H:%M:%S.%3N")"
-        pip install --upgrade pip
-        pip install flake8
-        pip install flake8-max-function-length
-      shell: bash
-    - run: |
-        set -euo pipefail
-        echo "now: $(date -u +"%Y-%m-%dT%H:%M:%S.%3N")"
-        echo "Running Flake8..."
-        
-        FLAKE8_FAILED=false
-        
-        # Start building Flake8 args
-        FLAKE8_ARGS=(".")
-        FLAKE8_ARGS+=("--max-function-length=${{ inputs.max-function-length }}")
-        FLAKE8_ARGS+=("--max-complexity=${{ inputs.max-complexity }}")
-        FLAKE8_ARGS+=("--benchmark")
-        FLAKE8_ARGS+=("--verbose")
-        
-        # Force config file if found
-        if [ -f .flake8 ]; then
-          echo "Using .flake8 config file"
-          FLAKE8_ARGS+=("--config=.flake8")
-        elif [ -f setup.cfg ] && grep -q '^\s*\[flake8\]' setup.cfg; then
-          FLAKE8_ARGS+=("--config=setup.cfg")
-        elif [ -f tox.ini ] && grep -q '^\s*\[flake8\]' tox.ini; then
-          FLAKE8_ARGS+=("--config=tox.ini")
-        else
-          echo "No Flake8 config found. Appending default ignore list"
-          FLAKE8_ARGS+=("--ignore=E203,E226,E228,E231,E501,W503,W504")
-        fi
-        
-        # run!
-        echo "flake8 ${FLAKE8_ARGS[*]}"
-        if ! flake8 "${FLAKE8_ARGS[@]}" | tee flake8_output.log; then
-          FLAKE8_FAILED=true
-        fi
-        
-        # put in env var to interpret downstream
-        echo "FLAKE8_FAILED=$FLAKE8_FAILED" >> "$GITHUB_ENV"
-      shell: bash
-    - run: |
-        set -euo pipefail
-        echo "now: $(date -u +"%Y-%m-%dT%H:%M:%S.%3N")"
-        EXIT_WITH=0
 
-        if grep -q "is too complex" flake8_output.log; then
-          echo "::error::Complexity issues detected. Refactor or adjust 'max-complexity'."
-          EXIT_WITH=1
-        fi
-        if grep -q "Function too long" flake8_output.log; then
-          echo "::error::Function length issues detected. Refactor or adjust 'max-function-length'."
-          EXIT_WITH=1
-        fi
-        # Check the exported FLAKE8_FAILED variable
-        if [ "${FLAKE8_FAILED:-false}" = "true" ]; then
-          echo "::error::Flake8 found code style errors. Check the output above for details."
-          EXIT_WITH=1
-        fi
+        echo "::error::This action has been deprecated and can no longer be used (see below)."
+        echo "::notice::Use the reusable workflow 'WIPACrepo/wipac-dev-workflows/.github/workflows/lint-python.yml@<ref>' instead."
+        echo "::notice::See https://github.com/WIPACrepo/wipac-dev-workflows/tree/main/.github/workflows/lint-python.md for details."
 
-        exit $EXIT_WITH
+        exit 1
       shell: bash
