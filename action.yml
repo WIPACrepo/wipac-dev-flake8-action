@@ -1,15 +1,17 @@
-name: 'DEPRECATED: WIPAC Dev Flake8'
-description: 'DEPRECATED: GitHub Action Package for Running Flake8'
+name: 'Deprecated: WIPAC Dev Flake8'
+description: 'Deprecated GitHub Action for running Flake8'
 
 runs:
   using: "composite"
   steps:
-    - name: DEPRECATED
+    - name: Deprecated
       run: |
-        # step: DEPRECATED
+        # step: Deprecated
         set -euo pipefail
-        echo "::error::This action is deprecated."
-        echo "::notice::Please use the WIPACrepo/wipac-dev-workflows/.github/workflows/lint-python.yml@...' reusable workflow instead."
-        echo "::notice::See https://github.com/WIPACrepo/wipac-dev-workflows/tree/main/.github/workflows/lint-python.md for more information."
+
+        echo "::error::This action has been deprecated and can no longer be used."
+        echo "::notice::Use the reusable workflow 'WIPACrepo/wipac-dev-workflows/.github/workflows/lint-python.yml@<ref>' instead."
+        echo "::notice::See https://github.com/WIPACrepo/wipac-dev-workflows/tree/main/.github/workflows/lint-python.md for details."
+
         exit 1
       shell: bash
