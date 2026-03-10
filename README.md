@@ -6,3 +6,5 @@ This action package has been deprecated. Please use the reusable workflow `WIPAC
 
 For more information, see:
 https://github.com/WIPACrepo/wipac-dev-workflows/tree/main/.github/workflows/lint-python.md
+
+This repository previously provided the WIPAC Dev Team's GitHub Action package for running Flake8 with standardized options.
